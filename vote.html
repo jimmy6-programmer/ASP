@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote for Contestant</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS (if any) -->
+    <link rel="stylesheet" href="css/custom.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .contestant-details img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        .contestant-details h2 {
+            margin-bottom: 10px;
+        }
+        .btn-submit {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .input-group-text{
+            height: 38px;
+        }
+        .input-group-text img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="contestant-details" class="text-center contestant-details"></div>
+        <form id="vote-form" action="submit_vote.php" method="post">
+            <input type="hidden" id="contestant-id" name="contestant_id">
+            <div class="form-group">
+                <label for="amount">Select Amount:</label>
+                <select id="amount" name="amount" class="form-control">
+                    <option value="100">100 (1 Point)</option>
+                    <option value="500">500 (5 Points)</option>
+                    <option value="1000">1000 (10 Points)</option>
+                    <option value="5000">5000 (50 Points)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="telephone">Telephone Number:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <img src="img/mtn.svg" alt="MTN">
+                        </span>
+                    </div>
+                    <input type="text" id="telephone" name="telephone" class="form-control" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-submit">Submit Vote</button>
+        </form>
+    </div>
+
+    <script>
+        // Get contestant ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const contestantId = urlParams.get('id');
+
+        // Fetch contestant details
+        fetch(`get_contestant.php?id=${contestantId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('contestant-details').innerText = data.error;
+                } else {
+                    const details = `
+                        <img src="${data.image}" alt="${data.name}">
+                        <h2>${data.name}</h2>
+                        <p>Age: ${data.age}</p>
+                        <p>Specialty: ${data.specialty}</p>
+                        <p>From: ${data.origin}</p>
+                    `;
+                    document.getElementById('contestant-details').innerHTML = details;
+                    document.getElementById('contestant-id').value = data.id;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
